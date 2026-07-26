@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VDeX Launcher</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a0a1e 0%, #2d1028 40%, #3b0d1e 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  .version-badge {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fda4af;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(4px);
+  }
+
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+
+  .splash-logo-svg {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 0 16px rgba(225, 29, 72, 0.6)) drop-shadow(0 0 40px rgba(225, 29, 72, 0.3));
+    margin-bottom: 8px;
+    animation: splashLogoPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes splashLogoPulse {
+    0%, 100% { filter: drop-shadow(0 0 16px rgba(225, 29, 72, 0.6)) drop-shadow(0 0 40px rgba(225, 29, 72, 0.3)); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 24px rgba(251, 113, 133, 0.8)) drop-shadow(0 0 50px rgba(244, 63, 94, 0.4)); transform: scale(1.03); }
+  }
+
+  .logo-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px rgba(225, 29, 72, 0.4);
+  }
+
+  .logo-subtitle {
+    font-size: 11px;
+    font-weight: 500;
+    color: #fb7185;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Progress bar */
+  .progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #e11d48, #f43f5e, #fb7185);
+    border-radius: 0 3px 3px 0;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 12px rgba(251, 113, 133, 0.6);
+  }
+
+  /* Subtle floating particles */
+  .particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: rgba(251, 113, 133, 0.3);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20px) scale(1); opacity: 0; }
+  }
+
+  .loading-text {
+    position: absolute;
+    bottom: 18px;
+    color: rgba(253, 164, 175, 0.6);
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="version-badge">1.0.0</div>
+
+  <div class="particles" id="particles"></div>
+
+  <div class="logo-container">
+    <img class="splash-logo-svg" src="logo.svg" alt="VDeX" />
+    <div class="logo-title">VDeX</div>
+    <div class="logo-subtitle">The Launcher for Minecraft</div>
+  </div>
+
+  <div class="loading-text" id="loadingText">Loading...</div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <script>
+    // Animate progress bar over 3 seconds
+    const bar = document.getElementById('progressBar');
+    const loadingText = document.getElementById('loadingText');
+    const startTime = Date.now();
+    const duration = 5000;
+
+    const loadingStages = [
+      { at: 0, text: 'Loading...' },
+      { at: 20, text: 'Initializing core...' },
+      { at: 45, text: 'Preparing launcher...' },
+      { at: 70, text: 'Almost ready...' },
+      { at: 90, text: 'Starting VDeX...' }
+    ];
+
+    let stageIndex = 0;
+
+    function updateProgress() {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / duration) * 100, 100);
+      bar.style.width = pct + '%';
+
+      // Update loading text
+      while (stageIndex < loadingStages.length - 1 && pct >= loadingStages[stageIndex + 1].at) {
+        stageIndex++;
+        loadingText.textContent = loadingStages[stageIndex].text;
+      }
+
+      if (pct < 100) requestAnimationFrame(updateProgress);
+    }
+    requestAnimationFrame(updateProgress);
+
+    // Create floating particles
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 15; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (3 + Math.random() * 4) + 's';
+      p.style.animationDelay = Math.random() * 3 + 's';
+      p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>

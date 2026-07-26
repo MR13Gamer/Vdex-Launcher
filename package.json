@@ -1,0 +1,59 @@
+{
+  "name": "vdex-launcher",
+  "version": "1.0.2",
+  "main": "main.js",
+  "description": "VDeX Minecraft Launcher with chat, calls, and mods",
+  "author": "VDeX",
+  "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build:portable": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.vdex.launcher",
+    "productName": "VDeX Launcher",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**",
+      "!.git/**",
+      "!node_modules/.cache/**"
+    ],
+    "icon": "icon.ico",
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "VDeX Launcher"
+    },
+    "portable": {
+      "artifactName": "VDeX-Launcher-Portable.exe"
+    }
+  },
+  "keywords": [],
+  "devDependencies": {
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1",
+    "png-to-ico": "^3.0.1"
+  },
+  "dependencies": {
+    "firebase": "^12.10.0",
+    "minecraft-launcher-core": "^3.18.2",
+    "yauzl": "^3.2.0"
+  }
+}

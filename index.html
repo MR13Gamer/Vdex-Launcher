@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VDeX Launcher</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ==================== AUTH SCREEN (hidden - sign-in is in Chat tab) ==================== -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-bg-effects">
+      <div class="auth-orb orb-1"></div>
+      <div class="auth-orb orb-2"></div>
+    </div>
+
+    <div class="auth-container">
+      <div class="auth-logo">
+        <div class="logo"><img class="logo-svg" src="logo.svg" alt="VDeX" /></div>
+        <h1>VDeX Launcher</h1>
+      </div>
+
+      <!-- Continue As (saved account) -->
+      <div id="continue-form" class="auth-form hidden">
+        <h2>Welcome back!</h2>
+        <div class="continue-card" id="continue-card">
+          <div class="continue-avatar"><i class="ri-user-fill"></i></div>
+          <div class="continue-info">
+            <h3 id="continue-username">Loading...</h3>
+            <p id="continue-email">...</p>
+          </div>
+        </div>
+        <button class="auth-btn primary" id="continue-btn">
+          <i class="ri-arrow-right-line"></i> Continue
+        </button>
+        <p class="auth-link"><a href="#" id="switch-account-btn">Use a different account</a></p>
+      </div>
+
+      <!-- Sign In Form -->
+      <div id="signin-form" class="auth-form">
+        <h2>Sign In</h2>
+        <div class="form-group">
+          <label for="signin-email">Email</label>
+          <input type="email" id="signin-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="signin-password">Password</label>
+          <input type="password" id="signin-password" placeholder="Enter your password" />
+        </div>
+        <div class="auth-error" id="signin-error"></div>
+        <button class="auth-btn primary" id="signin-btn">Sign In</button>
+        <div class="auth-divider"><span>or</span></div>
+        <button class="auth-btn google" id="google-signin-btn">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.01 24.01 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
+        </button>
+        <p class="auth-link">Don't have an account? <a href="#" id="show-register">Register</a></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" class="auth-form hidden">
+        <h2>Create Account</h2>
+        <div class="form-group">
+          <label for="register-username">Username</label>
+          <input type="text" id="register-username" placeholder="Choose a username" maxlength="20" />
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" placeholder="At least 6 characters" />
+        </div>
+        <div class="form-group">
+          <label for="register-confirm">Confirm Password</label>
+          <input type="password" id="register-confirm" placeholder="Re-enter password" />
+        </div>
+        <div class="auth-error" id="register-error"></div>
+        <button class="auth-btn primary" id="register-btn">Register</button>
+        <p class="auth-link">Already have an account? <a href="#" id="show-signin">Sign In</a></p>
+      </div>
+
+      <!-- Username Prompt (for new Google users) -->
+      <div id="username-prompt" class="auth-form hidden">
+        <h2>Choose a Username</h2>
+        <p class="auth-subtitle">One last step to complete your account</p>
+        <div class="form-group">
+          <label for="prompt-username">Username</label>
+          <input type="text" id="prompt-username" placeholder="Choose a username" maxlength="20" />
+        </div>
+        <div class="auth-error" id="username-error"></div>
+        <button class="auth-btn primary" id="username-submit-btn">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN APP ==================== -->
+  <div id="app-container" class="app">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="logo-section">
+          <div class="logo"><img class="logo-svg" src="logo.svg" alt="VDeX" /></div>
+          <span class="logo-text">VDeX</span>
+        </div>
+        <nav class="nav-menu">
+          <button class="nav-item active" data-page="home">
+            <div class="nav-icon-wrap"><i class="ri-home-5-fill"></i></div>
+            <span class="nav-label">Home</span>
+          </button>
+          <button class="nav-item" data-page="friends">
+            <div class="nav-icon-wrap"><i class="ri-message-3-fill"></i></div>
+            <span class="nav-label">Chat</span>
+          </button>
+          <button class="nav-item" data-page="client">
+            <div class="nav-icon-wrap"><i class="ri-gamepad-fill"></i></div>
+            <span class="nav-label">Client</span>
+          </button>
+          <button class="nav-item" data-page="mods">
+            <div class="nav-icon-wrap"><i class="ri-puzzle-fill"></i></div>
+            <span class="nav-label">Mods</span>
+          </button>
+          <button class="nav-item" data-page="servers">
+            <div class="nav-icon-wrap"><i class="ri-server-fill"></i></div>
+            <span class="nav-label">Servers</span>
+          </button>
+          <button class="nav-item" data-page="instances">
+            <div class="nav-icon-wrap"><i class="ri-stack-fill"></i></div>
+            <span class="nav-label">Instances</span>
+          </button>
+          <button class="nav-item" data-page="worlds">
+            <div class="nav-icon-wrap"><i class="ri-earth-fill"></i></div>
+            <span class="nav-label">Worlds</span>
+          </button>
+          <button class="nav-item" data-page="gallery">
+            <div class="nav-icon-wrap"><i class="ri-image-fill"></i></div>
+            <span class="nav-label">Gallery</span>
+          </button>
+          <button class="nav-item" data-page="bugs">
+            <div class="nav-icon-wrap"><i class="ri-bug-fill"></i></div>
+            <span class="nav-label">Bugs</span>
+          </button>
+          <button class="nav-item" id="folder-nav-btn">
+            <div class="nav-icon-wrap"><i class="ri-folder-3-fill"></i></div>
+            <span class="nav-label">Folder</span>
+          </button>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-page="settings">
+          <div class="nav-icon-wrap"><i class="ri-settings-4-fill"></i></div>
+          <span class="nav-label">Settings</span>
+        </button>
+        <div class="sidebar-version">v1.0.1</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+
+      <!-- ===== Home Page ===== -->
+      <section class="page active" id="page-home">
+        <div class="page-header">
+          <h1>Welcome back, <span id="home-username">User</span></h1>
+          <p class="subtitle">Your VDeX Launcher is ready.</p>
+        </div>
+
+        <div class="home-content">
+          <div class="mc-banner animate-slideup">
+            <div class="mc-banner-bg"></div>
+            <div class="mc-banner-info">
+              <h2><i class="ri-sword-fill"></i> Minecraft</h2>
+              <p>Select your loader & version, then download or play</p>
+            </div>
+          </div>
+
+          <!-- MC Account Login -->
+          <div class="mc-login-section animate-slideup">
+            <h3><i class="ri-account-circle-fill"></i> Minecraft Account</h3>
+            <div class="mc-login-options">
+              <button class="mc-login-btn active" data-login="offline" id="mc-login-offline">
+                <i class="ri-user-fill"></i> Offline Mode
+              </button>
+              <button class="mc-login-btn" data-login="microsoft" id="mc-login-microsoft">
+                <i class="ri-microsoft-fill"></i> Microsoft
+              </button>
+              <button class="mc-login-btn" data-login="elyby" id="mc-login-elyby">
+                <i class="ri-shield-keyhole-fill"></i> Ely.by
+              </button>
+            </div>
+            <div class="mc-login-input" id="mc-login-input-area">
+              <input type="text" id="mc-offline-username" placeholder="Enter username..." />
+              <button class="mc-save-username-btn" id="mc-save-username-btn" title="Save username"><i class="ri-save-line"></i> Save</button>
+            </div>
+            <div class="mc-login-status" id="mc-login-status"></div>
+          </div>
+
+          <!-- Loader selection -->
+          <div class="mc-section animate-slideup">
+            <h3 class="mc-section-title"><i class="ri-stack-fill"></i> Loader</h3>
+            <div class="mc-loader-list" id="mc-loader-list"></div>
+          </div>
+
+          <!-- Version selection -->
+          <div class="mc-section animate-slideup">
+            <h3 class="mc-section-title"><i class="ri-git-branch-fill"></i> Version</h3>
+            <div class="mc-version-row">
+              <div class="version-filter-btns">
+                <button class="vfilter-btn active" data-filter="release">Releases</button>
+                <button class="vfilter-btn" data-filter="snapshot">Snapshots</button>
+                <button class="vfilter-btn" data-filter="old_beta">Beta</button>
+                <button class="vfilter-btn" data-filter="old_alpha">Alpha</button>
+                <button class="vfilter-btn" data-filter="all">All</button>
+              </div>
+              <select id="mc-version-select" class="mc-version-select">
+                <option value="">Loading...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Action button + progress -->
+          <div class="mc-action-area animate-slideup">
+            <div class="mc-action-row">
+              <button class="mc-action-btn download" id="mc-action-btn" data-action="download">
+                <i class="ri-download-line" id="mc-action-icon"></i>
+                <span id="mc-action-text">Download</span>
+              </button>
+              <button class="mc-cancel-btn hidden" id="mc-cancel-btn">
+                <i class="ri-close-line"></i>
+                <span>Cancel</span>
+              </button>
+              <button class="mc-logs-toggle" id="mc-logs-toggle">
+                <i class="ri-terminal-box-line"></i> Logs
+              </button>
+              <button class="mc-overlay-toggle hidden" id="overlay-toggle-btn" title="Toggle VDeX Voice Overlay (Shift+Tab)">
+                <i class="ri-voiceprint-line"></i> Overlay
+              </button>
+            </div>
+            <div class="mc-progress" id="mc-progress-bar" style="display:none">
+              <div class="mc-progress-fill" id="mc-progress-fill"></div>
+            </div>
+            <p class="mc-progress-text" id="mc-progress-text" style="display:none"></p>
+            <p class="mc-launch-hint" id="mc-launch-hint" style="display:none">
+              <i class="ri-time-line"></i> Minecraft can take 10–40 seconds to start. Please wait...
+            </p>
+
+            <!-- Step indicator -->
+            <div class="mc-step-indicator" id="mc-step-indicator" style="display:none">
+              <div class="mc-step" data-step="java"><span class="mc-step-dot"></span> Java</div>
+              <div class="mc-step" data-step="download"><span class="mc-step-dot"></span> Download</div>
+              <div class="mc-step" data-step="extract"><span class="mc-step-dot"></span> Extract</div>
+              <div class="mc-step" data-step="launch"><span class="mc-step-dot"></span> Launch</div>
+            </div>
+          </div>
+
+          <!-- Crash banner -->
+          <div class="mc-crash-banner hidden" id="mc-crash-banner">
+            <i class="ri-error-warning-fill"></i>
+            <div class="mc-crash-info">
+              <strong id="mc-crash-title">Minecraft Crashed</strong>
+              <p id="mc-crash-message">Error details here</p>
+            </div>
+            <div class="mc-crash-actions">
+              <button id="mc-crash-fix"><i class="ri-brain-fill"></i> Smart Fix</button>
+              <button id="mc-crash-logs">View Logs</button>
+              <button id="mc-crash-dismiss">Dismiss</button>
+            </div>
+          </div>
+
+          <!-- Logs panel -->
+          <div class="mc-logs-section" id="mc-logs-section" style="display:none">
+            <div class="mc-logs-header">
+              <h3><i class="ri-terminal-box-fill"></i> Console Output</h3>
+              <div class="mc-logs-actions">
+                <button id="mc-logs-copy"><i class="ri-file-copy-line"></i> Copy</button>
+                <button id="mc-logs-clear"><i class="ri-delete-bin-line"></i> Clear</button>
+                <button id="mc-logs-close"><i class="ri-close-line"></i> Close</button>
+              </div>
+            </div>
+            <div class="mc-logs-output" id="mc-logs-output"></div>
+          </div>
+
+          <!-- Minecraft News -->
+          <div class="mc-news-section animate-slideup" id="mc-news-section">
+            <h3 class="mc-section-title"><i class="ri-newspaper-fill"></i> Minecraft News</h3>
+            <div class="mc-news-grid" id="mc-news-grid">
+              <div class="mc-news-loading"><i class="ri-loader-4-line ri-spin"></i> Loading news...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Call status banner -->
+        <div class="call-status-banner hidden" id="call-status-banner">
+          <i class="ri-phone-fill"></i>
+          <span id="call-status-banner-text">In call</span>
+          <button class="call-banner-end-btn" id="call-banner-end-btn">End Call</button>
+        </div>
+
+        <!-- Bottom panel: Username -->
+        <div class="home-bottom-panel">
+          <div class="username-section">
+            <div class="username-display">
+              <i class="ri-user-fill"></i>
+              <span id="home-display-username">Player</span>
+            </div>
+            <button class="edit-username-btn" id="edit-username-btn" title="Change username (once per 7 days)">
+              <i class="ri-pencil-fill"></i>
+            </button>
+          </div>
+          <div id="username-edit-area" class="username-edit-area hidden">
+            <input type="text" id="new-username-input" placeholder="New username" maxlength="20" />
+            <button class="save-username-btn" id="save-username-btn">Save</button>
+            <button class="cancel-username-btn" id="cancel-username-btn">Cancel</button>
+            <span class="username-edit-error" id="username-edit-error"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Friends / Messenger Page (Discord-like) ===== -->
+      <section class="page" id="page-friends">
+
+        <!-- Sign-in gate: shown when not authenticated -->
+        <div id="chat-signin-gate" class="chat-signin-gate">
+          <div class="chat-signin-card">
+            <div class="chat-signin-logo">
+              <div class="logo"><img class="logo-svg" src="logo.svg" alt="VDeX" /></div>
+              <h1>VDeX Launcher</h1>
+            </div>
+            <div class="chat-signin-form">
+              <h2>Sign In</h2>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="chat-signin-email" placeholder="you@example.com" />
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="chat-signin-password" placeholder="Enter your password" />
+              </div>
+              <div id="chat-signin-error" class="auth-error"></div>
+              <button class="auth-btn primary" id="chat-signin-btn">Sign In</button>
+              <div class="auth-divider"><span>or</span></div>
+              <button class="auth-btn google" id="chat-google-signin-btn">
+                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.01 24.01 0 0 0 0 21.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
+              </button>
+              <p class="auth-link">Don't have an account? <a href="#" id="chat-show-register">Register</a></p>
+            </div>
+
+            <!-- Register form (hidden by default) -->
+            <div class="chat-register-form hidden" id="chat-register-form">
+              <h2>Register</h2>
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="chat-register-username" placeholder="Choose a username" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="chat-register-email" placeholder="you@example.com" />
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="chat-register-password" placeholder="At least 6 characters" />
+              </div>
+              <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="chat-register-confirm" placeholder="Confirm password" />
+              </div>
+              <div id="chat-register-error" class="auth-error"></div>
+              <button class="auth-btn primary" id="chat-register-btn">Create Account</button>
+              <p class="auth-link">Already have an account? <a href="#" id="chat-show-signin">Sign In</a></p>
+            </div>
+
+            <!-- Username prompt for Google sign-in -->
+            <div class="chat-username-prompt hidden" id="chat-username-prompt">
+              <h2>Choose a Username</h2>
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="chat-prompt-username" placeholder="3-20 characters" />
+              </div>
+              <div id="chat-username-error" class="auth-error"></div>
+              <button class="auth-btn primary" id="chat-username-submit">Continue</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="messenger-layout" style="display:none">
+          <!-- Left: Conversation List -->
+          <div class="msg-sidebar">
+            <div class="msg-sidebar-top">
+              <h2 class="msg-sidebar-title">Messenger</h2>
+              <div class="msg-sidebar-actions">
+                <button class="msg-icon-btn" id="add-friend-btn" title="Add Friend"><i class="ri-user-add-line"></i></button>
+                <button class="msg-icon-btn notification-btn" id="notifications-btn" title="Notifications">
+                  <i class="ri-notification-3-line"></i>
+                  <span class="notif-badge" id="notification-badge" style="display:none">0</span>
+                </button>
+                <button class="msg-icon-btn" id="create-group-btn" title="Create Group"><i class="ri-group-line"></i></button>
+              </div>
+            </div>
+            <!-- Tabs: All Chats / Friends / Groups -->
+            <div class="msg-tabs">
+              <button class="msg-tab active" data-tab="all">All Chats</button>
+              <button class="msg-tab" data-tab="friends">Friends</button>
+              <button class="msg-tab" data-tab="groups">Groups</button>
+            </div>
+            <div class="msg-search-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" id="msg-search" placeholder="Search..." />
+            </div>
+            <!-- Conversation list -->
+            <div class="msg-conv-list" id="msg-conv-list">
+              <div class="msg-conv-empty">
+                <i class="ri-chat-3-line"></i>
+                <p>No conversations yet</p>
+                <span>Add friends to start chatting</span>
+              </div>
+            </div>
+            <!-- Groups list (hidden by default) -->
+            <div class="msg-conv-list hidden" id="msg-groups-list">
+              <div class="msg-conv-empty">
+                <i class="ri-group-line"></i>
+                <p>No groups yet</p>
+                <span>Create a group to chat with multiple friends</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Chat Area -->
+          <div class="msg-chat-area">
+            <!-- Empty state -->
+            <div class="msg-chat-empty" id="msg-chat-empty">
+              <div class="msg-empty-icon"><i class="ri-message-3-line"></i></div>
+              <h3>Select a conversation</h3>
+              <p>Choose a friend or group to start messaging</p>
+            </div>
+
+            <!-- Active chat -->
+            <div id="msg-chat-active" class="msg-chat-active hidden">
+              <!-- Chat header -->
+              <div class="msg-chat-header">
+                <button class="msg-back-btn" id="msg-back-btn"><i class="ri-arrow-left-s-line"></i></button>
+                <div class="msg-chat-header-avatar" id="msg-header-avatar"><i class="ri-user-fill"></i></div>
+                <div class="msg-chat-header-info">
+                  <h3 id="chat-friend-name">Friend</h3>
+                  <span id="chat-friend-status" class="msg-status offline">Offline</span>
+                </div>
+                <div class="msg-chat-header-actions">
+                  <button class="msg-action-btn" id="voice-call-btn" title="Voice Call"><i class="ri-phone-fill"></i></button>
+                  <button class="msg-action-btn" id="msg-video-call-btn" title="Video Call"><i class="ri-vidicon-fill"></i></button>
+                  <button class="msg-action-btn" id="group-call-btn" title="Group Call" style="display:none"><i class="ri-team-fill"></i></button>
+                  <button class="msg-action-btn" id="msg-add-to-group-btn" title="Add People" style="display:none"><i class="ri-user-add-line"></i></button>
+                  <button class="msg-action-btn" id="group-members-toggle" title="Members" style="display:none"><i class="ri-group-line"></i></button>
+                </div>
+              </div>
+              <!-- Messages -->
+              <div class="msg-messages" id="chat-messages"></div>
+              <!-- Typing indicator -->
+              <div class="msg-typing" id="msg-typing-indicator"></div>
+              <!-- Input -->
+              <div class="msg-input-bar">
+                <button class="msg-input-icon-btn" id="msg-attach-btn" title="Attach"><i class="ri-attachment-2"></i></button>
+                <button class="msg-input-icon-btn" id="emoji-picker-btn" title="Emoji"><i class="ri-emotion-happy-line"></i></button>
+                <input type="text" id="chat-input" placeholder="Type a message..." />
+                <button class="msg-send-btn" id="send-message-btn"><i class="ri-send-plane-fill"></i></button>
+              </div>
+              <div id="emoji-picker" class="emoji-picker hidden">
+                <div class="emoji-grid" id="emoji-grid"></div>
+              </div>
+            </div>
+            <!-- Group members right panel -->
+            <div class="group-members-panel hidden" id="group-members-panel">
+              <div class="gmp-header">
+                <h4>Members</h4>
+              </div>
+              <div class="gmp-list" id="gmp-list">
+                <!-- members injected -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===== Mods Page ===== -->
+      <!-- ===== Client Page (Lunar-style) ===== -->
+      <section class="page" id="page-client">
+        <div class="client-header">
+          <div class="client-header-left">
+            <h1><i class="ri-gamepad-fill"></i> VDeX Client</h1>
+            <p class="subtitle">Lunar Client-style mods, profiles & cosmetics</p>
+          </div>
+          <div class="client-header-right">
+            <span class="client-mod-counter" id="client-mod-count">0/0 mods enabled</span>
+          </div>
+        </div>
+
+        <!-- Client Sub-tabs -->
+        <div class="client-subtabs">
+          <button class="client-subtab active" data-ctab="client-mods"><i class="ri-puzzle-fill"></i> Mods</button>
+          <button class="client-subtab" data-ctab="client-profiles"><i class="ri-stack-fill"></i> Profiles</button>
+          <button class="client-subtab" data-ctab="client-cosmetics"><i class="ri-t-shirt-fill"></i> Cosmetics</button>
+          <button class="client-subtab" data-ctab="client-hud"><i class="ri-layout-grid-fill"></i> HUD Layout</button>
+        </div>
+
+        <!-- ═══ Mods Tab ═══ -->
+        <div class="client-subtab-content active" id="ctab-client-mods">
+          <div class="client-toolbar">
+            <div class="client-search-bar">
+              <i class="ri-search-line"></i>
+              <input type="text" id="client-mod-search" placeholder="Search mods..." />
+            </div>
+            <div class="client-actions">
+              <button class="client-action-btn" id="client-enable-all" title="Enable All"><i class="ri-checkbox-multiple-fill"></i> Enable All</button>
+              <button class="client-action-btn" id="client-disable-all" title="Disable All"><i class="ri-checkbox-multiple-blank-fill"></i> Disable All</button>
+            </div>
+          </div>
+          <div class="client-categories">
+            <button class="client-cat-btn active" data-category="All">All</button>
+            <button class="client-cat-btn" data-category="HUD"><i class="ri-layout-2-fill"></i> HUD</button>
+            <button class="client-cat-btn" data-category="PvP"><i class="ri-sword-fill"></i> PvP</button>
+            <button class="client-cat-btn" data-category="Visual"><i class="ri-eye-fill"></i> Visual</button>
+            <button class="client-cat-btn" data-category="World"><i class="ri-earth-fill"></i> World</button>
+            <button class="client-cat-btn" data-category="Performance"><i class="ri-rocket-fill"></i> Performance</button>
+            <button class="client-cat-btn" data-category="Utility"><i class="ri-tools-fill"></i> Utility</button>
+          </div>
+          <div class="client-mods-grid" id="client-mods-grid">
+            <div class="client-loading"><i class="ri-loader-4-line ri-spin"></i> Loading client mods...</div>
+          </div>
+        </div>
+
+        <!-- ═══ Profiles Tab ═══ -->
+        <div class="client-subtab-content" id="ctab-client-profiles">
+          <div class="client-profiles-header">
+            <h2><i class="ri-stack-fill"></i> Mod Profiles</h2>
+            <p>One-click presets for different playstyles. Applying a profile will enable only its mods.</p>
+          </div>
+          <div class="client-profiles-grid" id="client-profiles-grid">
+            <div class="client-loading"><i class="ri-loader-4-line ri-spin"></i> Loading profiles...</div>
+          </div>
+        </div>
+
+        <!-- ═══ Cosmetics Tab ═══ -->
+        <div class="client-subtab-content" id="ctab-client-cosmetics">
+          <div class="client-cosmetics-header">
+            <h2><i class="ri-t-shirt-fill"></i> Cosmetics</h2>
+            <p>Customize your in-game appearance with capes, wings, hats, and emotes</p>
+          </div>
+          <div class="cosmetic-tabs">
+            <button class="cosmetic-tab-btn active" data-cosmetic-tab="capes"><i class="ri-t-shirt-fill"></i> Capes</button>
+            <button class="cosmetic-tab-btn" data-cosmetic-tab="wings"><i class="ri-leaf-fill"></i> Wings</button>
+            <button class="cosmetic-tab-btn" data-cosmetic-tab="hats"><i class="ri-vip-crown-fill"></i> Hats</button>
+            <button class="cosmetic-tab-btn" data-cosmetic-tab="emotes"><i class="ri-emotion-happy-fill"></i> Emotes</button>
+            <button class="cosmetic-tab-btn" data-cosmetic-tab="bandanas"><i class="ri-shirt-fill"></i> Bandanas</button>
+          </div>
+          <div class="cosmetic-section active" id="cosmetic-capes">
+            <div class="cosmetic-grid" id="cosmetic-capes-grid"></div>
+          </div>
+          <div class="cosmetic-section" id="cosmetic-wings">
+            <div class="cosmetic-grid" id="cosmetic-wings-grid"></div>
+          </div>
+          <div class="cosmetic-section" id="cosmetic-hats">
+            <div class="cosmetic-grid" id="cosmetic-hats-grid"></div>
+          </div>
+          <div class="cosmetic-section" id="cosmetic-emotes">
+            <div class="cosmetic-grid" id="cosmetic-emotes-grid"></div>
+          </div>
+          <div class="cosmetic-section" id="cosmetic-bandanas">
+            <div class="cosmetic-grid" id="cosmetic-bandanas-grid"></div>
+          </div>
+        </div>
+
+        <!-- ═══ HUD Layout Tab ═══ -->
+        <div class="client-subtab-content" id="ctab-client-hud">
+          <div class="hud-editor-header">
+            <h2><i class="ri-layout-grid-fill"></i> HUD Layout Editor</h2>
+            <p>Drag and drop HUD elements to customize their position on screen</p>
+            <div class="hud-editor-actions">
+              <button class="client-action-btn" id="hud-reset-btn"><i class="ri-refresh-fill"></i> Reset Layout</button>
+              <button class="client-action-btn primary" id="hud-save-btn"><i class="ri-save-fill"></i> Save Layout</button>
+            </div>
+          </div>
+          <div class="hud-editor-canvas" id="hud-editor-canvas">
+            <div class="hud-screen-border">
+              <p class="hud-empty-msg">Enable some HUD mods first, then come back to arrange them</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mod Config Modal -->
+        <div class="client-config-modal hidden" id="client-config-modal">
+          <div class="client-config-content">
+            <div class="client-config-header">
+              <h3 id="client-config-title">Mod Settings</h3>
+              <button class="icon-btn" id="client-config-close"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="client-config-body" id="client-config-body"></div>
+            <div class="client-config-footer">
+              <button class="client-action-btn primary" id="client-config-save"><i class="ri-save-fill"></i> Save</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-mods">
+        <!-- Mods Sub-tabs -->
+        <div class="mods-subtabs">
+          <button class="mods-subtab active" data-mtab="mods-browse"><i class="ri-puzzle-fill"></i> Mods</button>
+          <button class="mods-subtab" data-mtab="shaders-browse"><i class="ri-contrast-fill"></i> Shaders</button>
+          <button class="mods-subtab" data-mtab="resourcepacks-browse"><i class="ri-palette-fill"></i> Resource Packs</button>
+          <button class="mods-subtab" data-mtab="mod-conflicts"><i class="ri-error-warning-fill"></i> Conflict Detector</button>
+          <button class="mods-subtab" data-mtab="mod-updates"><i class="ri-refresh-fill"></i> Update Checker</button>
+        </div>
+
+        <!-- Mods Browse (existing) -->
+        <div class="mods-subtab-content active" id="mtab-mods-browse">
+        <div id="mod-search-view">
+          <div class="mods-header">
+            <div class="page-header">
+              <h1>Mods</h1>
+              <p class="subtitle">Browse & download mods</p>
+            </div>
+            <div class="mods-controls">
+              <div class="search-bar">
+                <i class="ri-search-line"></i>
+                <input type="text" id="mod-search-input" placeholder="Search mods..." />
+              </div>
+              <div class="source-toggle">
+                <button class="source-btn active" data-source="modrinth">Modrinth</button>
+                <button class="source-btn" data-source="curseforge">CurseForge</button>
+              </div>
+            </div>
+            <div class="mods-filters">
+              <div class="mod-loader-filter">
+                <button class="mod-filter-btn active" data-loader="">All</button>
+                <button class="mod-filter-btn" data-loader="fabric">Fabric</button>
+                <button class="mod-filter-btn" data-loader="forge">Forge</button>
+                <button class="mod-filter-btn" data-loader="quilt">Quilt</button>
+                <button class="mod-filter-btn" data-loader="neoforge">NeoForge</button>
+              </div>
+              <select id="mod-version-filter" class="mod-version-select">
+                <option value="">All Versions</option>
+              </select>
+            </div>
+          </div>
+          <!-- Recommended Mods (shown when search is empty) -->
+          <div class="recommended-mods-section" id="recommended-mods-section">
+            <div class="recommended-header">
+              <h3><i class="ri-star-fill"></i> Recommended Mods</h3>
+              <button class="install-all-btn" id="install-all-pack" title="Install entire pack at once"><i class="ri-download-fill"></i> Install All</button>
+            </div>
+            <div class="recommended-categories">
+              <button class="rec-cat-btn active" data-category="popular">Popular</button>
+              <button class="rec-cat-btn" data-category="performance">Performance</button>
+              <button class="rec-cat-btn" data-category="qol">Quality of Life</button>
+              <button class="rec-cat-btn" data-category="worldgen">World Gen</button>
+              <button class="rec-cat-btn" data-category="libraries">Libraries</button>
+            </div>
+            <div class="recommended-grid" id="recommended-grid">
+              <div class="loading-spinner"><i class="ri-loader-4-line"></i> Loading recommendations...</div>
+            </div>
+          </div>
+
+          <div class="mod-results" id="mod-results">
+            <div class="empty-state">
+              <i class="ri-search-line"></i>
+              <p>Search for mods to get started</p>
+            </div>
+          </div>
+          <div class="downloaded-section">
+            <h3><i class="ri-download-fill"></i> Downloaded Mods</h3>
+            <div id="downloaded-mods-list" class="downloaded-mods-list">
+              <div class="empty-state small"><p>No downloaded mods yet.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mod Detail View -->
+        <div id="mod-detail" class="mod-detail hidden">
+          <button class="back-btn" id="mod-detail-back">
+            <i class="ri-arrow-left-line"></i> Back to search
+          </button>
+          <div class="mod-detail-header">
+            <div class="mod-detail-icon" id="detail-mod-icon"><i class="ri-puzzle-fill"></i></div>
+            <div class="mod-detail-info">
+              <h2 id="detail-mod-name">Mod Name</h2>
+              <p id="detail-mod-desc">Description</p>
+            </div>
+          </div>
+          <h3 class="versions-title">Versions</h3>
+          <div class="mod-detail-filters">
+            <div class="mod-loader-filter">
+              <button class="detail-filter-btn active" data-loader="">All</button>
+              <button class="detail-filter-btn" data-loader="fabric">Fabric</button>
+              <button class="detail-filter-btn" data-loader="forge">Forge</button>
+              <button class="detail-filter-btn" data-loader="quilt">Quilt</button>
+              <button class="detail-filter-btn" data-loader="neoforge">NeoForge</button>
+            </div>
+            <select id="detail-version-filter" class="mod-version-select">
+              <option value="">All Versions</option>
+            </select>
+          </div>
+          <div id="mod-versions-list" class="versions-list"></div>
+        </div>
+        </div><!-- end mtab-mods-browse -->
+
+        <!-- Shaders Browse -->
+        <div class="mods-subtab-content" id="mtab-shaders-browse">
+          <div class="page-header">
+            <h1>Shaders</h1>
+            <p class="subtitle">Browse & install shader packs</p>
+          </div>
+          <div class="shader-controls">
+            <div class="shader-search-bar">
+              <i class="ri-search-line"></i>
+              <input type="text" id="shader-search-input" placeholder="Search shaders on Modrinth..." />
+            </div>
+            <div class="shader-perf-filters">
+              <button class="shader-perf-btn active" data-perf="">All</button>
+              <button class="shader-perf-btn" data-perf="low">Low Impact</button>
+              <button class="shader-perf-btn" data-perf="medium">Medium</button>
+              <button class="shader-perf-btn" data-perf="high">High Quality</button>
+            </div>
+          </div>
+          <div class="shader-results" id="shader-results">
+            <div class="shader-loading"><i class="ri-loader-4-line ri-spin"></i> Loading popular shaders...</div>
+          </div>
+          <div class="shader-installed-section">
+            <h3><i class="ri-download-fill"></i> Installed Shaders</h3>
+            <div class="shader-actions-bar">
+              <button class="shader-open-folder-btn" id="shader-open-folder"><i class="ri-folder-open-fill"></i> Open Folder</button>
+            </div>
+            <div class="shader-installed-list" id="shader-installed-list">
+              <div class="empty-state small"><p>No shaders installed</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource Packs Browse -->
+        <div class="mods-subtab-content" id="mtab-resourcepacks-browse">
+          <div class="page-header">
+            <h1>Resource Packs</h1>
+            <p class="subtitle">Browse & install texture packs</p>
+          </div>
+          <div class="rp-controls">
+            <div class="rp-search-bar">
+              <i class="ri-search-line"></i>
+              <input type="text" id="rp-search-input" placeholder="Search resource packs on Modrinth..." />
+            </div>
+            <div class="rp-res-filters">
+              <button class="rp-res-btn active" data-res="">All</button>
+              <button class="rp-res-btn" data-res="16x">16x</button>
+              <button class="rp-res-btn" data-res="32x">32x</button>
+              <button class="rp-res-btn" data-res="64x">64x</button>
+              <button class="rp-res-btn" data-res="128x">128x+</button>
+            </div>
+          </div>
+          <div class="rp-results" id="rp-results">
+            <div class="rp-loading"><i class="ri-loader-4-line ri-spin"></i> Loading popular resource packs...</div>
+          </div>
+          <div class="rp-installed-section">
+            <h3><i class="ri-download-fill"></i> Installed Resource Packs</h3>
+            <div class="rp-actions-bar">
+              <button class="rp-open-folder-btn" id="rp-open-folder"><i class="ri-folder-open-fill"></i> Open Folder</button>
+            </div>
+            <div class="rp-installed-list" id="rp-installed-list">
+              <div class="empty-state small"><p>No resource packs installed</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mod Conflict Detector -->
+        <div class="mods-subtab-content" id="mtab-mod-conflicts">
+          <div class="page-header">
+            <h1>Mod Conflict Detector</h1>
+            <p class="subtitle">Scan for incompatible mods</p>
+          </div>
+          <div class="conflict-actions">
+            <button class="conflict-scan-btn" id="conflict-scan-btn"><i class="ri-radar-fill"></i> Scan for Conflicts</button>
+          </div>
+          <div class="conflict-results" id="conflict-results">
+            <div class="conflict-empty">
+              <i class="ri-shield-check-fill"></i>
+              <p>Click "Scan for Conflicts" to check your mods</p>
+            </div>
+          </div>
+          <div class="conflict-mod-list" id="conflict-mod-list"></div>
+        </div>
+
+        <!-- Mod Update Checker -->
+        <div class="mods-subtab-content" id="mtab-mod-updates">
+          <div class="page-header">
+            <h1>Mod Update Checker</h1>
+            <p class="subtitle">Check for mod updates from Modrinth & CurseForge</p>
+          </div>
+          <div class="update-actions">
+            <button class="update-check-btn" id="update-check-btn"><i class="ri-refresh-fill"></i> Check for Updates</button>
+          </div>
+          <div class="update-results" id="update-results">
+            <div class="update-empty">
+              <i class="ri-checkbox-circle-fill"></i>
+              <p>Click "Check for Updates" to scan your installed mods</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Folder page removed - button opens app directory directly -->
+
+      <!-- ===== Servers Page ===== -->
+      <section class="page" id="page-servers">
+        <div class="servers-page-layout" id="servers-page-layout">
+          <!-- Servers Header -->
+          <div class="servers-header">
+            <div class="page-header" style="margin-bottom:0">
+              <h1>Servers</h1>
+              <p class="subtitle">Create and manage Minecraft servers with Aternos</p>
+            </div>
+          </div>
+
+          <!-- Sub-tabs: Server Finder / Aternos Panel / My Servers -->
+          <div class="servers-subtabs">
+            <button class="servers-subtab active" data-stab="server-finder">
+              <i class="ri-search-line"></i> Server Finder
+            </button>
+            <button class="servers-subtab" data-stab="aternos-panel" id="subtab-aternos-btn">
+              <i class="ri-global-line"></i> Aternos Panel
+            </button>
+            <button class="servers-subtab" data-stab="my-servers">
+              <i class="ri-server-line"></i> My Servers
+            </button>
+          </div>
+
+          <!-- Server Finder View -->
+          <div class="servers-subtab-content active" id="subtab-server-finder">
+            <div class="sf-controls">
+              <div class="sf-search-bar">
+                <i class="ri-search-line"></i>
+                <input type="text" id="sf-search-input" placeholder="Search servers..." />
+              </div>
+              <div class="sf-filters">
+                <select id="sf-category-filter" class="sf-filter-select">
+                  <option value="">All Categories</option>
+                  <option value="survival">Survival</option>
+                  <option value="skyblock">Skyblock</option>
+                  <option value="creative">Creative</option>
+                  <option value="minigames">Minigames</option>
+                  <option value="pvp">PvP</option>
+                  <option value="factions">Factions</option>
+                  <option value="prison">Prison</option>
+                  <option value="rpg">RPG</option>
+                </select>
+                <select id="sf-version-filter" class="sf-filter-select">
+                  <option value="">All Versions</option>
+                  <option value="1.21">1.21.x</option>
+                  <option value="1.20">1.20.x</option>
+                  <option value="1.19">1.19.x</option>
+                  <option value="1.18">1.18.x</option>
+                  <option value="1.16">1.16.x</option>
+                  <option value="1.12">1.12.x</option>
+                  <option value="1.8">1.8.x</option>
+                </select>
+                <select id="sf-sort-filter" class="sf-filter-select">
+                  <option value="players">Most Players</option>
+                  <option value="name">Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="sf-server-grid" id="sf-server-grid">
+              <div class="sf-loading"><i class="ri-loader-4-line ri-spin"></i> Loading popular servers...</div>
+            </div>
+          </div>
+
+          <!-- Aternos Panel View (embedded browser) -->
+          <div class="servers-subtab-content" id="subtab-aternos-panel">
+            <div class="aternos-browser-bar">
+              <div class="aternos-nav-btns">
+                <button class="aternos-nav-btn" id="aternos-back" title="Back"><i class="ri-arrow-left-line"></i></button>
+                <button class="aternos-nav-btn" id="aternos-forward" title="Forward"><i class="ri-arrow-right-line"></i></button>
+                <button class="aternos-nav-btn" id="aternos-reload" title="Reload"><i class="ri-refresh-line"></i></button>
+                <button class="aternos-nav-btn" id="aternos-home" title="Home"><i class="ri-home-4-line"></i></button>
+              </div>
+              <div class="aternos-url-bar" id="aternos-url-bar">
+                <i class="ri-lock-fill"></i>
+                <span id="aternos-url-text">aternos.org</span>
+              </div>
+              <button class="aternos-nav-btn" id="aternos-external" title="Open in Browser"><i class="ri-external-link-line"></i></button>
+            </div>
+            <div class="aternos-webview-container" id="aternos-webview-container">
+              <div class="aternos-loading" id="aternos-loading">
+                <div class="aternos-loading-spinner"></div>
+                <span>Loading Aternos...</span>
+              </div>
+              <!-- webview injected by JS -->
+            </div>
+            <!-- Floating server action bar (appears when server detected) -->
+            <div class="aternos-server-bar hidden" id="aternos-server-bar">
+              <div class="aternos-server-bar-info">
+                <i class="ri-server-fill"></i>
+                <span id="aternos-detected-address">server.aternos.me</span>
+                <span class="aternos-server-status" id="aternos-server-status"></span>
+              </div>
+              <div class="aternos-server-bar-actions">
+                <button class="aternos-bar-btn save" id="aternos-save-server"><i class="ri-save-line"></i> Save Server</button>
+                <button class="aternos-bar-btn play" id="aternos-play-server"><i class="ri-play-fill"></i> Play</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- My Servers View -->
+          <div class="servers-subtab-content" id="subtab-my-servers">
+            <div class="servers-actions-bar">
+              <button class="create-server-btn" id="create-server-btn">
+                <i class="ri-add-line"></i> New Server
+              </button>
+              <button class="aternos-open-btn" id="open-aternos-btn">
+                <i class="ri-global-line"></i> Open Aternos Panel
+              </button>
+            </div>
+            <div class="servers-grid" id="servers-grid">
+              <div class="servers-empty">
+                <i class="ri-server-line"></i>
+                <h3>No servers yet</h3>
+                <p>Create your first Minecraft server to get started</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Server Dashboard (hidden initially) -->
+          <div id="server-dashboard-view" class="server-dashboard hidden">
+            <div class="server-dash-header">
+              <button class="server-dash-back" id="server-dash-back"><i class="ri-arrow-left-line"></i></button>
+              <div class="server-dash-title">
+                <h2 id="dash-server-name">Server Name</h2>
+                <span id="dash-server-info">Paper 1.21.4</span>
+              </div>
+              <div class="server-dash-actions">
+                <button class="server-power-btn start" id="server-start-btn"><i class="ri-play-fill"></i> Start on Aternos</button>
+                <button class="server-power-btn join" id="server-join-btn"><i class="ri-login-box-fill"></i> Join Server</button>
+                <button class="server-power-btn delete" id="server-delete-btn"><i class="ri-delete-bin-line"></i></button>
+              </div>
+            </div>
+
+            <!-- Connection Info -->
+            <div class="server-connection-info" id="server-connection-info">
+              <div class="connection-item">
+                <label>Server Address:</label>
+                <code id="conn-java-address">yourserver.aternos.me</code>
+                <button class="copy-address-btn" id="copy-server-addr-btn" title="Copy"><i class="ri-file-copy-line"></i></button>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="server-quick-actions">
+              <button class="server-quick-btn" id="dash-manage-aternos"><i class="ri-global-line"></i> Manage on Aternos</button>
+              <button class="server-quick-btn green" id="dash-copy-ip"><i class="ri-file-copy-line"></i> Copy Server IP</button>
+              <button class="server-quick-btn" id="dash-edit-server"><i class="ri-edit-line"></i> Edit Info</button>
+            </div>
+
+            <!-- Server Details -->
+            <div class="server-details-grid">
+              <div class="server-detail-card">
+                <div class="detail-label"><i class="ri-computer-fill"></i> Platform</div>
+                <div class="detail-value" id="dash-platform">Java</div>
+              </div>
+              <div class="server-detail-card">
+                <div class="detail-label"><i class="ri-server-fill"></i> Software</div>
+                <div class="detail-value" id="dash-software">Vanilla</div>
+              </div>
+              <div class="server-detail-card">
+                <div class="detail-label"><i class="ri-hashtag"></i> Version</div>
+                <div class="detail-value" id="dash-version">1.21.4</div>
+              </div>
+              <div class="server-detail-card">
+                <div class="detail-label"><i class="ri-group-fill"></i> Max Players</div>
+                <div class="detail-value" id="dash-max-players">20</div>
+              </div>
+              <div class="server-detail-card">
+                <div class="detail-label"><i class="ri-cloud-fill"></i> Hosting</div>
+                <div class="detail-value">Aternos (Free)</div>
+              </div>
+              <div class="server-detail-card">
+                <div class="detail-label"><i class="ri-calendar-fill"></i> Created</div>
+                <div class="detail-value" id="dash-created">-</div>
+              </div>
+            </div>
+
+            <div class="server-dash-aternos-hint">
+              <i class="ri-information-line"></i>
+              <div>
+                <strong>Server hosted on Aternos</strong>
+                <p>Start, stop, configure, and manage your server through the Aternos panel. Click "Manage on Aternos" to open the control panel.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Bugs Page ===== -->
+      <section class="page" id="page-bugs">
+        <div class="page-header">
+          <h1>Bug Reports</h1>
+          <p class="subtitle">Report issues and track bugs</p>
+        </div>
+
+        <!-- Bug Reporter Username (one-time) -->
+        <div class="bugs-username-section" id="bugs-username-section">
+          <div class="bugs-username-card">
+            <i class="ri-user-fill"></i>
+            <div>
+              <h3>Set your reporter name</h3>
+              <p>This name will be used for all your bug reports (can only be set once)</p>
+            </div>
+          </div>
+          <div class="bugs-username-input-row">
+            <input type="text" id="bugs-username-input" placeholder="Enter your name..." maxlength="30" />
+            <button class="bugs-username-save-btn" id="bugs-username-save-btn">Save Name</button>
+          </div>
+          <div class="bugs-username-error" id="bugs-username-error"></div>
+        </div>
+
+        <!-- Reporter info (shown after name is set) -->
+        <div class="bugs-reporter-info hidden" id="bugs-reporter-info">
+          <i class="ri-user-fill"></i>
+          <span>Reporting as: <strong id="bugs-reporter-name">-</strong></span>
+        </div>
+
+        <!-- New Bug Form -->
+        <div class="bugs-form-section" id="bugs-form-section">
+          <button class="bugs-add-btn" id="bugs-add-btn">
+            <i class="ri-add-line"></i> Report a Bug
+          </button>
+          <div class="bugs-form hidden" id="bugs-form">
+            <div class="bugs-form-group">
+              <label>Bug Title <span class="required">*</span></label>
+              <input type="text" id="bug-title-input" placeholder="Brief description of the bug..." maxlength="100" />
+            </div>
+            <div class="bugs-form-group">
+              <label>Issue Details <span class="required">*</span></label>
+              <textarea id="bug-issue-input" placeholder="Describe the issue in detail. What happened? What did you expect?" rows="4" maxlength="1000"></textarea>
+            </div>
+            <div class="bugs-form-actions">
+              <button class="bugs-cancel-btn" id="bugs-cancel-btn">Cancel</button>
+              <button class="bugs-submit-btn" id="bugs-submit-btn"><i class="ri-send-plane-fill"></i> Submit Bug</button>
+            </div>
+            <div class="bugs-form-error" id="bugs-form-error"></div>
+          </div>
+        </div>
+
+        <!-- Bugs List -->
+        <div class="bugs-list-section">
+          <h3 class="bugs-list-title"><i class="ri-list-check-2"></i> All Bug Reports <span class="bugs-count" id="bugs-count">0</span></h3>
+          <div class="bugs-list" id="bugs-list">
+            <div class="bugs-empty">
+              <i class="ri-bug-line"></i>
+              <p>No bugs reported yet</p>
+              <span>Click "Report a Bug" to submit your first report</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Instances Page ===== -->
+      <section class="page" id="page-instances">
+
+        <!-- List View -->
+        <div id="instances-list-view">
+          <div class="page-header">
+            <div>
+              <h1>Instances</h1>
+              <p class="subtitle">Manage your Minecraft instances with custom mods & settings</p>
+            </div>
+            <button class="inst-create-btn" id="inst-create-btn">
+              <i class="ri-add-line"></i> New Instance
+            </button>
+          </div>
+          <div class="instances-grid" id="instances-grid">
+            <div class="inst-loading"><i class="ri-loader-4-line ri-spin"></i> Loading instances...</div>
+          </div>
+        </div>
+
+        <!-- Detail View (hidden by default) -->
+        <div id="instances-detail-view" style="display:none">
+          <div class="inst-detail-header">
+            <button class="inst-back-btn" id="inst-detail-back">
+              <i class="ri-arrow-left-line"></i> Back
+            </button>
+            <div class="inst-detail-title">
+              <h2 id="inst-detail-name">Instance Name</h2>
+              <div class="inst-detail-badges">
+                <span class="inst-tag" id="inst-detail-badge-version"></span>
+                <span class="inst-tag inst-tag-loader" id="inst-detail-badge-loader"></span>
+              </div>
+            </div>
+            <div class="inst-detail-actions">
+              <button class="inst-detail-action-btn" id="inst-detail-open-folder" title="Open folder">
+                <i class="ri-folder-open-line"></i> Folder
+              </button>
+              <button class="inst-detail-action-btn primary" id="inst-detail-launch" title="Launch">
+                <i class="ri-play-fill"></i> Launch
+              </button>
+            </div>
+          </div>
+
+          <div class="inst-detail-body">
+            <!-- Modrinth Search -->
+            <div class="inst-mod-search-section">
+              <h3><i class="ri-search-line"></i> Add Mods from Modrinth</h3>
+              <div class="inst-mod-search-bar">
+                <input type="text" id="inst-mod-search-input" placeholder="Search mods (e.g. Sodium, Iris, REI...)" />
+                <button class="inst-mod-search-btn" id="inst-mod-search-btn">
+                  <i class="ri-search-line"></i> Search
+                </button>
+              </div>
+              <div class="inst-mod-search-filters">
+                <select id="inst-modrinth-version" class="inst-filter-select">
+                  <option value="">Any version</option>
+                </select>
+                <select id="inst-modrinth-loader" class="inst-filter-select">
+                  <option value="">Any loader</option>
+                  <option value="fabric">Fabric</option>
+                  <option value="forge">Forge</option>
+                  <option value="quilt">Quilt</option>
+                  <option value="neoforge">NeoForge</option>
+                </select>
+              </div>
+              <div class="inst-mod-search-results" id="inst-mod-search-results"></div>
+            </div>
+
+            <!-- Installed Mods -->
+            <div class="inst-installed-section">
+              <h3><i class="ri-puzzle-fill"></i> Installed Mods</h3>
+              <div class="inst-installed-mods" id="inst-installed-mods">
+                <div class="inst-loading"><i class="ri-loader-4-line ri-spin"></i> Loading...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create / Edit Modal -->
+        <div id="inst-create-modal" class="inst-modal hidden">
+          <div class="inst-modal-content">
+            <div class="inst-modal-header">
+              <h3 id="inst-form-title">Create Instance</h3>
+              <button class="icon-btn" id="inst-modal-close">&times;</button>
+            </div>
+            <div class="inst-modal-body">
+              <input type="hidden" id="inst-form-id" />
+
+              <!-- Icon picker -->
+              <div class="inst-form-group">
+                <label>Icon</label>
+                <div class="inst-icon-picker">
+                  <span class="inst-icon-option active">🎮</span>
+                  <span class="inst-icon-option">⚔️</span>
+                  <span class="inst-icon-option">🧱</span>
+                  <span class="inst-icon-option">🌿</span>
+                  <span class="inst-icon-option">🔥</span>
+                  <span class="inst-icon-option">💎</span>
+                  <span class="inst-icon-option">🏹</span>
+                  <span class="inst-icon-option">🧪</span>
+                  <span class="inst-icon-option">🏰</span>
+                  <span class="inst-icon-option">🌙</span>
+                  <span class="inst-icon-option">⚡</span>
+                  <span class="inst-icon-option">🎯</span>
+                </div>
+                <input type="text" id="inst-form-icon" placeholder="Or type any emoji" maxlength="4" style="width:100px;margin-top:6px" />
+              </div>
+
+              <div class="inst-form-row">
+                <div class="inst-form-group inst-form-grow">
+                  <label>Instance Name *</label>
+                  <input type="text" id="inst-form-name" placeholder="e.g. Fabric 1.21 PvP" maxlength="40" />
+                </div>
+                <div class="inst-form-group">
+                  <label>Color</label>
+                  <input type="color" id="inst-form-color" value="#7c3aed" class="inst-color-input" />
+                </div>
+              </div>
+
+              <div class="inst-form-row">
+                <div class="inst-form-group inst-form-grow">
+                  <label>Minecraft Version *</label>
+                  <select id="inst-form-version">
+                    <option value="">Loading...</option>
+                  </select>
+                </div>
+                <div class="inst-form-group inst-form-grow">
+                  <label>Loader</label>
+                  <select id="inst-form-loader">
+                    <option value="vanilla">Vanilla</option>
+                    <option value="fabric" selected>Fabric</option>
+                    <option value="forge">Forge</option>
+                    <option value="quilt">Quilt</option>
+                    <option value="neoforge">NeoForge</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="inst-form-group">
+                <label>Description</label>
+                <textarea id="inst-form-desc" placeholder="Optional description..." rows="2" maxlength="200"></textarea>
+              </div>
+            </div>
+            <div class="inst-modal-footer">
+              <button class="inst-btn-secondary" id="inst-form-cancel">Cancel</button>
+              <button class="inst-btn-primary" id="inst-form-save">
+                <i class="ri-save-line"></i> Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===== Worlds Page ===== -->
+      <section class="page" id="page-worlds">
+        <div class="page-header">
+          <h1>Worlds</h1>
+          <p class="subtitle">Manage your Minecraft worlds</p>
+        </div>
+        <div class="worlds-actions-bar">
+          <button class="worlds-refresh-btn" id="worlds-refresh-btn"><i class="ri-refresh-line"></i> Refresh</button>
+          <button class="worlds-open-btn" id="worlds-open-saves-btn"><i class="ri-folder-open-fill"></i> Open Saves Folder</button>
+        </div>
+        <div class="worlds-grid" id="worlds-grid">
+          <div class="worlds-loading"><i class="ri-loader-4-line ri-spin"></i> Loading worlds...</div>
+        </div>
+      </section>
+
+      <!-- ===== Gallery Page ===== -->
+      <section class="page" id="page-gallery">
+        <div class="page-header">
+          <h1>Gallery</h1>
+          <p class="subtitle">Screenshots & recordings from VDeX Launcher</p>
+        </div>
+        <div class="gallery-storage-path" id="gallery-storage-path">
+          <i class="ri-folder-3-fill"></i> Storage: <span id="gallery-path-text">Loading...</span>
+          <button class="gallery-path-open" id="gallery-path-open" title="Open folder"><i class="ri-external-link-line"></i></button>
+        </div>
+        <div class="gallery-keybinds-info">
+          <span><kbd>Ctrl+P</kbd> Screenshot (works in Minecraft too!)</span>
+          <span><kbd>Ctrl+Shift+V</kbd> Record Video (captures MC screen)</span>
+        </div>
+        <div class="gallery-actions-bar">
+          <div class="gallery-tab-btns">
+            <button class="gallery-tab-btn active" data-tab="all">All</button>
+            <button class="gallery-tab-btn" data-tab="images">Images</button>
+            <button class="gallery-tab-btn" data-tab="videos">Videos</button>
+          </div>
+          <div class="gallery-actions-right">
+            <button class="gallery-refresh-btn" id="gallery-refresh-btn"><i class="ri-refresh-line"></i> Refresh</button>
+            <button class="gallery-open-btn" id="gallery-open-folder-btn"><i class="ri-folder-open-fill"></i> Open Folder</button>
+            <span class="gallery-count" id="gallery-count"></span>
+          </div>
+        </div>
+        <div class="gallery-grid" id="gallery-grid">
+          <div class="gallery-loading"><i class="ri-loader-4-line ri-spin"></i> Loading media...</div>
+        </div>
+        <!-- Lightbox -->
+        <div class="gallery-lightbox hidden" id="gallery-lightbox">
+          <button class="gallery-lb-close" id="gallery-lb-close"><i class="ri-close-line"></i></button>
+          <button class="gallery-lb-prev" id="gallery-lb-prev"><i class="ri-arrow-left-s-line"></i></button>
+          <button class="gallery-lb-next" id="gallery-lb-next"><i class="ri-arrow-right-s-line"></i></button>
+          <img id="gallery-lb-img" src="" alt="Screenshot" class="hidden" />
+          <video id="gallery-lb-video" controls class="hidden"></video>
+          <div class="gallery-lb-info">
+            <span id="gallery-lb-name"></span>
+            <span id="gallery-lb-date"></span>
+            <button class="gallery-lb-delete" id="gallery-lb-delete"><i class="ri-delete-bin-line"></i> Delete</button>
+          </div>
+        </div>
+        <!-- Video area selection overlay -->
+        <div class="gallery-video-select-overlay hidden" id="gallery-video-select-overlay">
+          <div class="gallery-video-select-info">
+            <h3><i class="ri-video-fill"></i> Select Recording Area</h3>
+            <p>Click and drag to select the area to record. Works with Minecraft!</p>
+            <button class="gallery-video-cancel" id="gallery-video-cancel"><i class="ri-close-line"></i> Cancel</button>
+          </div>
+          <canvas id="gallery-video-select-canvas"></canvas>
+        </div>
+        <!-- Recording indicator -->
+        <div class="gallery-recording-bar hidden" id="gallery-recording-bar">
+          <span class="recording-dot"></span>
+          <span id="gallery-recording-time">00:00</span>
+          <button class="gallery-stop-recording" id="gallery-stop-recording"><i class="ri-stop-fill"></i> Stop</button>
+        </div>
+      </section>
+
+      <!-- ===== Settings Page ===== -->
+      <section class="page" id="page-settings">
+        <div class="page-header">
+          <h1>Settings</h1>
+          <p class="subtitle">Customize your launcher</p>
+        </div>
+
+        <!-- Account Section -->
+        <div class="settings-section">
+          <h3 class="section-title">Account</h3>
+          <div class="account-card">
+            <div class="account-avatar"><i class="ri-user-fill"></i></div>
+            <div class="account-info">
+              <h3 id="settings-username">Username</h3>
+              <p id="settings-email">email@example.com</p>
+            </div>
+            <button class="sign-out-btn" id="sign-out-btn">
+              <i class="ri-logout-box-line"></i> Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- Java & Memory Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-cpu-fill"></i> Java & Memory</h3>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Java Path</h3>
+                <p>Custom Java executable (leave empty for auto-detect)</p>
+              </div>
+              <div class="setting-control-row">
+                <input type="text" id="setting-java-path" class="setting-input" placeholder="Auto-detect" readonly />
+                <button class="setting-browse-btn" id="setting-java-browse"><i class="ri-folder-open-fill"></i></button>
+                <button class="setting-clear-btn" id="setting-java-clear"><i class="ri-close-line"></i></button>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>RAM Allocation</h3>
+                <p>Maximum memory: <strong id="ram-display">2</strong> GB</p>
+              </div>
+              <div class="setting-control-row">
+                <input type="range" id="setting-ram" class="setting-slider" min="1" max="8" step="1" value="2" />
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>JVM Arguments</h3>
+                <p>Extra JVM flags (advanced users)</p>
+              </div>
+              <div class="setting-control-row">
+                <input type="text" id="setting-jvm-args" class="setting-input wide" placeholder="-XX:+UseG1GC ..." />
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Show Console</h3>
+                <p>Show Minecraft console output</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="setting-show-console" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Boost Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-speed-fill"></i> Performance Boost</h3>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>FPS Boost</h3>
+                <p>Apply optimized JVM flags for better FPS and lower lag spikes</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="setting-fps-boost" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item" id="fps-boost-details" style="display:none">
+              <div class="setting-info" style="width:100%">
+                <h3>Boost Profile</h3>
+                <p>Choose the optimization level</p>
+              </div>
+              <select id="setting-boost-profile" class="setting-select">
+                <option value="balanced">Balanced (Recommended)</option>
+                <option value="max-fps">Max FPS (Aggressive)</option>
+                <option value="low-end">Low-End PC</option>
+              </select>
+            </div>
+            <div class="boost-info-box" id="boost-info-box" style="display:none">
+              <i class="ri-flashlight-fill"></i>
+              <div>
+                <strong>Active Optimizations:</strong>
+                <p id="boost-info-text">G1 Garbage Collector, Optimized heap regions, Parallel processing, Pre-touch memory, Reduced GC pauses</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Fix AI Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-brain-fill"></i> Smart Fix AI</h3>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>AI API Key</h3>
+                <p>OpenRouter API key for AI-powered crash diagnosis</p>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="password" id="setting-ai-api-key" class="setting-input" placeholder="sk-or-..." style="width:240px;font-size:12px" />
+                <button id="ai-key-toggle" class="btn-small" style="padding:6px 10px;background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.3);border-radius:6px;color:#c4b5fd;cursor:pointer;font-size:11px">Show</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Launcher Behavior Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-window-fill"></i> Launcher Behavior</h3>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>After Game Starts</h3>
+                <p>What to do with the launcher when Minecraft launches</p>
+              </div>
+              <select id="setting-launch-behavior" class="setting-select">
+                <option value="keep-open">Keep open</option>
+                <option value="hide-to-tray">Hide to tray</option>
+                <option value="close">Close launcher</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Auto Update Mods</h3>
+                <p>Keep mods up to date automatically</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="setting-auto-update" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Show News</h3>
+                <p>Display Minecraft news on home page</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="setting-show-news" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-paint-brush-fill"></i> Launcher Theme</h3>
+          <div class="theme-grid" id="theme-grid">
+            <div class="theme-card active" data-theme="dark">
+              <div class="theme-preview theme-preview-dark"></div>
+              <span>Dark (Default)</span>
+            </div>
+            <div class="theme-card" data-theme="light">
+              <div class="theme-preview theme-preview-light"></div>
+              <span>Light</span>
+            </div>
+            <div class="theme-card" data-theme="midnight">
+              <div class="theme-preview theme-preview-midnight"></div>
+              <span>Midnight Blue</span>
+            </div>
+            <div class="theme-card" data-theme="emerald">
+              <div class="theme-preview theme-preview-emerald"></div>
+              <span>Emerald</span>
+            </div>
+            <div class="theme-card" data-theme="sunset">
+              <div class="theme-preview theme-preview-sunset"></div>
+              <span>Sunset</span>
+            </div>
+            <div class="theme-card" data-theme="rose">
+              <div class="theme-preview theme-preview-rose"></div>
+              <span>Rose</span>
+            </div>
+          </div>
+          <div class="theme-custom-section">
+            <h4>Custom Accent Color</h4>
+            <div class="theme-accent-row">
+              <input type="color" id="theme-accent-color" value="#8b5cf6" class="theme-color-picker" />
+              <span id="theme-accent-label">#8b5cf6</span>
+              <button class="theme-reset-btn" id="theme-reset-btn">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Analyzer Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-speed-fill"></i> Performance Analyzer</h3>
+          <div class="perf-analyzer">
+            <button class="perf-analyze-btn" id="perf-analyze-btn"><i class="ri-radar-fill"></i> Analyze Performance</button>
+            <div class="perf-results hidden" id="perf-results">
+              <div class="perf-system-info" id="perf-system-info"></div>
+              <div class="perf-mc-info" id="perf-mc-info"></div>
+              <div class="perf-recommendations" id="perf-recommendations"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutorial Hub Section -->
+        <div class="settings-section">
+          <h3 class="section-title"><i class="ri-book-open-fill"></i> Tutorial Hub</h3>
+          <div class="tutorial-grid" id="tutorial-grid">
+            <div class="tutorial-card" data-tutorial="getting-started">
+              <div class="tutorial-icon"><i class="ri-play-circle-fill"></i></div>
+              <h4>Getting Started</h4>
+              <p>Learn the basics of VDeX Launcher</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="install-mods">
+              <div class="tutorial-icon"><i class="ri-puzzle-fill"></i></div>
+              <h4>Installing Mods</h4>
+              <p>How to find, install, and manage mods</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="install-shaders">
+              <div class="tutorial-icon"><i class="ri-contrast-fill"></i></div>
+              <h4>Installing Shaders</h4>
+              <p>Make your game look stunning</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="forge-fabric">
+              <div class="tutorial-icon"><i class="ri-stack-fill"></i></div>
+              <h4>Forge vs Fabric</h4>
+              <p>Understanding mod loaders</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="server-setup">
+              <div class="tutorial-icon"><i class="ri-server-fill"></i></div>
+              <h4>Setting Up Servers</h4>
+              <p>Create and join Minecraft servers</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="optimize-fps">
+              <div class="tutorial-icon"><i class="ri-speed-fill"></i></div>
+              <h4>Optimize FPS</h4>
+              <p>Improve your game performance</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="backup-worlds">
+              <div class="tutorial-icon"><i class="ri-save-fill"></i></div>
+              <h4>Backup Worlds</h4>
+              <p>Keep your worlds safe</p>
+            </div>
+            <div class="tutorial-card" data-tutorial="fix-crashes">
+              <div class="tutorial-icon"><i class="ri-bug-fill"></i></div>
+              <h4>Fix Crashes</h4>
+              <p>Troubleshoot common issues</p>
+            </div>
+          </div>
+          <!-- Tutorial Detail View -->
+          <div class="tutorial-detail hidden" id="tutorial-detail">
+            <button class="tutorial-back-btn" id="tutorial-back-btn"><i class="ri-arrow-left-line"></i> Back to Tutorials</button>
+            <div class="tutorial-detail-content" id="tutorial-detail-content"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== Voice Call Overlay ===== -->
+  <div id="call-overlay" class="call-overlay hidden">
+    <div class="call-overlay-content">
+      <div class="call-avatar"><i class="ri-phone-fill"></i></div>
+      <h3 id="call-overlay-name">Calling...</h3>
+      <p id="call-status-text">Connecting...</p>
+      <div class="call-actions">
+        <!-- Incoming: Join Call -->
+        <button class="call-action-btn accept hidden" id="call-accept-btn" title="Join Call">
+          <i class="ri-phone-fill"></i>
+          <span>Join</span>
+        </button>
+        <!-- Connected: Mic toggle -->
+        <button class="call-action-btn mute hidden" id="call-mute-btn" title="Mute">
+          <i class="ri-mic-line"></i>
+          <span>Mic</span>
+        </button>
+        <!-- Incoming: Decline -->
+        <button class="call-action-btn decline hidden" id="call-decline-btn" title="Decline">
+          <i class="ri-close-line"></i>
+          <span>Decline</span>
+        </button>
+        <!-- Outgoing/Connected: End Call -->
+        <button class="call-action-btn hangup hidden" id="call-hangup-btn" title="End Call">
+          <i class="ri-phone-fill"></i>
+          <span>End</span>
+        </button>
+      </div>
+    </div>
+    <audio id="remote-audio" autoplay></audio>
+  </div>
+
+  <!-- ===== Group Call Full-Screen UI ===== -->
+  <div id="group-call-screen" class="group-call-screen hidden">
+    <div class="gc-main">
+      <!-- Screen share display -->
+      <div class="gc-screen-share hidden" id="gc-screen-share">
+        <div class="gc-screen-share-label" id="gc-screen-share-label">Screen Share</div>
+        <video id="gc-screen-video" autoplay playsinline></video>
+      </div>
+      <!-- Participant grid -->
+      <div class="gc-participants" id="gc-participants">
+        <!-- Participant tiles get injected here -->
+      </div>
+      <!-- Bottom controls -->
+      <div class="gc-controls">
+        <div class="gc-controls-left">
+          <span class="gc-call-info" id="gc-call-info">Group Call</span>
+          <span class="gc-timer" id="gc-timer">00:00</span>
+        </div>
+        <div class="gc-controls-center">
+          <button class="gc-ctrl-btn" id="gc-mute-btn" title="Mute">
+            <i class="ri-mic-line"></i>
+          </button>
+          <button class="gc-ctrl-btn" id="gc-screen-btn" title="Screen Share">
+            <i class="ri-computer-line"></i>
+          </button>
+          <button class="gc-ctrl-btn" id="gc-members-btn" title="Members">
+            <i class="ri-team-line"></i>
+          </button>
+          <button class="gc-ctrl-btn hangup" id="gc-hangup-btn" title="Leave Call">
+            <i class="ri-phone-fill"></i>
+          </button>
+        </div>
+        <div class="gc-controls-right">
+          <button class="gc-ctrl-btn" id="gc-minimize-btn" title="Minimize"><i class="ri-picture-in-picture-exit-line"></i></button>
+        </div>
+      </div>
+    </div>
+    <!-- Right sidebar: member list -->
+    <div class="gc-sidebar hidden" id="gc-sidebar">
+      <div class="gc-sidebar-header">
+        <h4>Members</h4>
+        <button class="gc-sidebar-close" id="gc-sidebar-close"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="gc-member-list" id="gc-member-list">
+        <!-- Member items injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Voice Connected Panel (Discord-style, bottom-left) ===== -->
+  <div id="voice-panel" class="voice-panel hidden">
+    <!-- Collapsed: small bar -->
+    <div class="voice-panel-bar" id="voice-panel-bar">
+      <div class="voice-panel-bar-left">
+        <div class="voice-panel-signal">
+          <i class="ri-signal-wifi-fill"></i>
+        </div>
+        <div class="voice-panel-bar-info">
+          <span class="voice-panel-status">Voice Connected</span>
+          <span class="voice-panel-channel" id="voice-panel-channel">Group Call</span>
+        </div>
+      </div>
+      <div class="voice-panel-bar-right">
+        <span class="voice-panel-timer" id="voice-panel-timer">00:00</span>
+      </div>
+    </div>
+    <!-- Expanded: participants + controls -->
+    <div class="voice-panel-body hidden" id="voice-panel-body">
+      <div class="voice-panel-members" id="voice-panel-members">
+        <!-- participant items injected -->
+      </div>
+    </div>
+    <!-- Controls always visible at bottom -->
+    <div class="voice-panel-controls">
+      <button class="vp-btn" id="vp-mute-btn" title="Mute"><i class="ri-mic-line"></i></button>
+      <button class="vp-btn" id="vp-screen-btn" title="Screen Share"><i class="ri-computer-line"></i></button>
+      <button class="vp-btn" id="vp-fullscreen-btn" title="Open Full Screen"><i class="ri-fullscreen-line"></i></button>
+      <button class="vp-btn hangup" id="vp-hangup-btn" title="Disconnect"><i class="ri-phone-fill"></i></button>
+    </div>
+  </div>
+
+  <!-- Modals (at root level so they aren't clipped by .page overflow) -->
+  <div id="add-friend-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Friends</h3>
+        <button class="icon-btn modal-close" id="close-add-friend">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="friend-search-input" placeholder="Search by username..." />
+        <div id="friend-search-results" class="friend-search-results"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="notifications-dropdown" class="notifications-dropdown hidden">
+    <div class="notif-header"><h4>Friend Requests</h4></div>
+    <div id="notifications-list" class="notifications-list">
+      <div class="empty-notif">No pending requests</div>
+    </div>
+  </div>
+
+  <div id="create-group-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Group</h3>
+        <button class="icon-btn modal-close" id="close-create-group">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="group-name-input" placeholder="Group name..." maxlength="30" />
+        <button class="auth-btn primary" id="create-group-submit" style="margin-top:12px">
+          <i class="ri-group-line"></i> Create Group
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="add-to-group-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add People</h3>
+        <button class="icon-btn modal-close" id="close-add-to-group">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="group-invite-input" placeholder="Search username to invite..." />
+        <div id="group-invite-results" class="friend-search-results"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VDeX Overlay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: transparent;
+      color: #e2ddf5;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ===== Collapsed: small pill button ===== */
+    .ov-pill {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 10, 26, 0.88);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 22px;
+      padding: 6px 14px 6px 10px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-app-region: drag;
+    }
+    .ov-pill:hover {
+      background: rgba(25, 15, 50, 0.95);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+    .ov-pill-icon {
+      width: 24px; height: 24px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: #fff;
+      animation: ovPulse 2s ease-in-out infinite;
+      -webkit-app-region: no-drag;
+    }
+    @keyframes ovPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+    .ov-pill-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: #22c55e;
+      white-space: nowrap;
+    }
+    .ov-pill-timer {
+      font-size: 10px;
+      color: #7c6fab;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ===== Expanded panel ===== */
+    .ov-panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 270px;
+      background: rgba(15, 10, 26, 0.94);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 14px;
+      overflow: hidden;
+      display: none;
+      animation: ovSlideIn 0.2s ease;
+      backdrop-filter: blur(12px);
+    }
+    .ov-panel.show { display: block; }
+    @keyframes ovSlideIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Panel header */
+    .ov-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #2d1b69, #1a0e3e);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+      -webkit-app-region: drag;
+    }
+    .ov-header-left {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ov-header-signal {
+      color: #22c55e; font-size: 14px;
+      animation: ovPulse2 2s infinite;
+    }
+    @keyframes ovPulse2 { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .ov-header-info {
+      display: flex; flex-direction: column;
+    }
+    .ov-header-status {
+      font-size: 10px; font-weight: 600; color: #22c55e;
+    }
+    .ov-header-channel {
+      font-size: 11px; color: #b0a3c8;
+      max-width: 140px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .ov-header-right {
+      display: flex; align-items: center; gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+    .ov-header-timer {
+      font-size: 10px; color: #7c6fab;
+      font-variant-numeric: tabular-nums;
+    }
+    .ov-close-btn {
+      width: 22px; height: 22px; border: none;
+      background: rgba(255,255,255,0.08); color: #7c7295;
+      border-radius: 6px; cursor: pointer; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      -webkit-app-region: no-drag;
+    }
+    .ov-close-btn:hover { background: rgba(255,255,255,0.15); color: #e2ddf5; }
+
+    /* Members list */
+    .ov-members {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 6px 8px;
+    }
+    .ov-members::-webkit-scrollbar { width: 3px; }
+    .ov-members::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 2px; }
+    .ov-member {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 6px; border-radius: 6px;
+    }
+    .ov-member:hover { background: rgba(255,255,255,0.04); }
+    .ov-member-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(139, 92, 246, 0.15);
+      display: flex; align-items: center; justify-content: center;
+      color: #a78bfa; font-size: 12px; flex-shrink: 0;
+    }
+    .ov-member-avatar.speaking {
+      box-shadow: 0 0 0 2px #22c55e;
+    }
+    .ov-member-name {
+      font-size: 11px; color: #d4cceb;
+      flex: 1; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .ov-member-name.me { color: #a78bfa; font-weight: 500; }
+    .ov-member-muted { color: #ef4444; font-size: 11px; }
+    .ov-no-members {
+      padding: 12px; text-align: center;
+      color: #5a4e75; font-size: 11px;
+    }
+
+    /* Controls */
+    .ov-controls {
+      display: flex; justify-content: center; gap: 6px;
+      padding: 8px 10px;
+      border-top: 1px solid rgba(139, 92, 246, 0.1);
+      background: rgba(0,0,0,0.15);
+    }
+    .ov-ctrl {
+      width: 34px; height: 34px; border: none;
+      border-radius: 8px; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s;
+      background: rgba(255,255,255,0.06); color: #b0a3c8;
+      -webkit-app-region: no-drag;
+    }
+    .ov-ctrl:hover { background: rgba(255,255,255,0.12); color: #e2ddf5; }
+    .ov-ctrl:active { transform: scale(0.9); }
+    .ov-ctrl.active { background: rgba(239,68,68,0.2); color: #f87171; }
+    .ov-ctrl.hangup { background: rgba(239,68,68,0.2); color: #f87171; }
+    .ov-ctrl.hangup:hover { background: rgba(239,68,68,0.35); }
+  </style>
+</head>
+<body>
+
+  <!-- Collapsed: small pill -->
+  <div class="ov-pill" id="ov-pill">
+    <div class="ov-pill-icon"><i class="ri-signal-wifi-fill"></i></div>
+    <span class="ov-pill-text" id="ov-pill-text">In Call</span>
+    <span class="ov-pill-timer" id="ov-pill-timer">00:00</span>
+  </div>
+
+  <!-- Expanded: full panel -->
+  <div class="ov-panel" id="ov-panel">
+    <div class="ov-header">
+      <div class="ov-header-left">
+        <i class="ri-signal-wifi-fill ov-header-signal"></i>
+        <div class="ov-header-info">
+          <span class="ov-header-status">Voice Connected</span>
+          <span class="ov-header-channel" id="ov-channel">Group Call</span>
+        </div>
+      </div>
+      <div class="ov-header-right">
+        <span class="ov-header-timer" id="ov-panel-timer">00:00</span>
+        <button class="ov-close-btn" id="ov-collapse-btn" title="Collapse"><i class="ri-subtract-line"></i></button>
+      </div>
+    </div>
+    <div class="ov-members" id="ov-members">
+      <div class="ov-no-members">Waiting for members...</div>
+    </div>
+    <div class="ov-controls">
+      <button class="ov-ctrl" id="ov-mute-btn" title="Mute"><i class="ri-mic-line"></i></button>
+      <button class="ov-ctrl hangup" id="ov-end-btn" title="Disconnect"><i class="ri-phone-fill"></i></button>
+    </div>
+  </div>
+
+  <script>
+    const pill = document.getElementById('ov-pill');
+    const panel = document.getElementById('ov-panel');
+    let expanded = false;
+
+    // Click pill to expand
+    pill.addEventListener('click', (e) => {
+      e.stopPropagation();
+      expanded = true;
+      pill.style.display = 'none';
+      panel.classList.add('show');
+      window.overlayAPI.resize(290, 340);
+    });
+
+    // Collapse back to pill
+    document.getElementById('ov-collapse-btn').addEventListener('click', () => {
+      expanded = false;
+      panel.classList.remove('show');
+      pill.style.display = 'flex';
+      window.overlayAPI.resize(200, 50);
+    });
+
+    // Mute toggle
+    document.getElementById('ov-mute-btn').addEventListener('click', () => {
+      window.overlayAPI.toggleMute();
+    });
+
+    // End call
+    document.getElementById('ov-end-btn').addEventListener('click', () => {
+      window.overlayAPI.endCall();
+    });
+
+    // Receive call updates
+    window.overlayAPI.onUpdateCall((data) => {
+      const pillText = document.getElementById('ov-pill-text');
+      const channel = document.getElementById('ov-channel');
+      if (data.active) {
+        const name = data.friendName || data.groupName || 'Voice Call';
+        if (pillText) pillText.textContent = name;
+        if (channel) channel.textContent = name;
+      }
+    });
+
+    // Timer sync
+    window.overlayAPI.onUpdateTimer((time) => {
+      document.getElementById('ov-pill-timer').textContent = time;
+      document.getElementById('ov-panel-timer').textContent = time;
+    });
+
+    // Mute state sync
+    window.overlayAPI.onUpdateMute((isMuted) => {
+      const btn = document.getElementById('ov-mute-btn');
+      btn.classList.toggle('active', isMuted);
+      btn.innerHTML = isMuted
+        ? '<i class="ri-mic-off-fill"></i>'
+        : '<i class="ri-mic-line"></i>';
+    });
+
+    // Members list update
+    window.overlayAPI.onUpdateMembers((members) => {
+      const container = document.getElementById('ov-members');
+      if (!members || members.length === 0) {
+        container.innerHTML = '<div class="ov-no-members">No one in call</div>';
+        return;
+      }
+      container.innerHTML = members.map(m => `
+        <div class="ov-member">
+          <div class="ov-member-avatar ${m.speaking ? 'speaking' : ''}"><i class="ri-user-fill"></i></div>
+          <span class="ov-member-name ${m.isMe ? 'me' : ''}">${m.isMe ? 'You' : m.username}</span>
+          ${m.muted ? '<i class="ri-mic-off-fill ov-member-muted"></i>' : ''}
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+</html>
